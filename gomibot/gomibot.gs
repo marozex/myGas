@@ -23,9 +23,6 @@ function setGomiTrigger() {
     triggerDay.setHours(11);
     triggerDay.setMinutes(30);
     ScriptApp.newTrigger("sendGomiReminder").timeBased().at(triggerDay).create();
-    triggerDay.setHours(13);
-    triggerDay.setMinutes(30);
-    ScriptApp.newTrigger("sendGomiReminder2").timeBased().at(triggerDay).create();
   }
 }
 

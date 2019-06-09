@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-select@latest"></script>
+
+    <style>
+      .dropdown-toggle::after {
+        display: none;
+      }
+      .dropdown-toggle .clear {
+        display: none;
+      }
+    </style>
+
+  </head>
+  <body>
+  <div id="app">
+  <div class="container">
+   <div class="col-lg-10" v-if="session">
+    <h4 class="font-weight-bold">
+      問い合わせフォーム<small>ver20190305 <?=Session.getActiveUser().getEmail();?></small>
+    </h4>
+    <form method="post" id="form1" class="container-fluid" v-on:submit.prevent="onSubmit" v-bind:class='{"was-validated": validated}'
+      novalidate name="myform" onsubmit="return false"
+      action="https://script.google.com/macros/s/hogehogehogehogehoge/exec">
+      <div id="product" class="container">
+        <div class="row shadow p-2 mb-3 bg-light rounded">
+          <div class="col-sm-2">プロダクト</div>
+          <div class="col-sm-3">
+            <select name="product" id="selectedProduct" class="custom-select" v-model="product" v-on:change="init">
+              <option disabled value="" selected>対象製品を選択</option>
+              <option value="aaaaa">aaaaa</option>
+              <option value="bbbbb">bbbbb</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="contents" class="container-fluid" v-if="product != ''" v-bind:class="{ 'bg-info': product == 'aaaaa', 'bg-warning': product == 'bbbbb' }">
+        <div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">問い合わせ元　<span class="badge badge-danger">必須入力</span></div>
+            <div class="col-sm-7">
+              <span v-if="product == 'aaaaa'">
+                <v-select :options="options" class="form-control form-control m-1" v-model="inquiryFacility"></v-select>
+                <input style="display:none" type="text" name="aaaaaFacility" class="form-control form-control m-1" v-model="inquiryFacility.label" required>
+              </span>
+              <span v-else>
+                <input type="text" name="bbbbbFacility" class="form-control form-control m-1" v-model="inquiryFacility" required>
+              </span>
+              <div class="invalid-feedback mb-1">必須入力の項目です</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">問い合わせ者氏名</div>
+            <div class="col-sm-5">
+              <input type="text" name="inquiryPerson" class="form-control form-control-sm m-1">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">問い合わせ日時 <span class="badge badge-pill badge-info">Y/m/d H:i</span></div>
+            <div class="col-sm-5">
+              <input type="text" name="inquiryDateTime" id="time" required class="form-control form-control-sm m-1">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">対応者　　<span class="badge badge-danger">必須入力</span></div>
+            <div class="col-sm-3">
+              <input type="text" name="staff" class="form-control form-control-sm m-1" required>
+              <div class="invalid-feedback mb-1">必須入力の項目です</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">対応部門(流れ)</div>
+            <div class="col-sm-3">
+              <select name="department" class="form-control form-control-sm m-1">
+                <option value="営業" selected>営業</option>
+                <option value="営業→開発">営業→開発</option>
+                <option value="開発→営業">開発→営業</option>
+                <option value="開発">開発</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">対応時間</div>
+            <div class="col-sm-3">
+              <select name="consumptiontime" class="form-control form-control-sm m-1">
+                <option value="00:10">00:10</option>
+                <option value="00:15">00:15</option>
+                <option value="00:20">00:20</option>
+                <option value="00:30">00:30</option>
+                <option value="00:45">00:45</option>
+                <option value="01:00">01:00</option>
+                <option value="01:30">01:30</option>
+                <option value="02:00">02:00</option>
+                <option value="02:00">03:00</option>
+                <option value="02:00">04:00</option>
+                <option value="02:00">05:00</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">問い合わせ内容 <span class="badge badge-danger">必須入力</span></div>
+            <div class="col-sm-7">
+              <textarea name="question" class="form-control form-control-sm m-1" rows="6" required></textarea>
+              <div class="invalid-feedback mb-1">必須入力の項目です</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">回答および対応 <span class="badge badge-danger">必須入力</span></div>
+            <div class="col-sm-7">
+              <textarea name="response" class="form-control form-control-sm m-1" rows="6" required></textarea>
+              <div class="invalid-feedback mb-1">必須入力の項目です</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3 offset-md-1">問合せ分類</div>
+            <div class="col-sm-3">
+              <select name="class" class="form-control form-control-sm m-1">
+                <option value="使い方質問">使い方質問</option>
+                <option value="仕様質問">仕様質問</option>
+                <option value="バグに起因">バグに起因</option>
+                <option value="設定で対応">設定で対応</option>
+                <option value="ハード故障">ハード故障</option>
+                <option value="軽微な不調">軽微な不調</option>
+                <option value="依頼・連絡">依頼・連絡</option>
+                <option value="不明">不明</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-2 offset-md-1">
+            <br>
+              <input class="btn btn-primary" type="submit" value="送信する" class="submit" :disabled="submitStatus === 'PENDING'">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <p>
+      <a href="https://docs.google.com/spreadsheets/d/hogehogehogehogehoge/" target="_blank">スプレッドシートの確認はこちら</a>
+    </p>
+   </div>
+   <div v-else>
+     セッションが切れています。googleアカウントに再ログインして下さい。
+   </div>
+  </div>
+  </div>
+
+  <script>
+  Vue.component('v-select', VueSelect.VueSelect);
+  var app = new Vue({
+  el: '#app',
+  data: {
+    product:'',
+    options: [],
+    selected:'',
+    validated:false,
+    inquiryFacility:'',
+    submitStatus: ''
+  },
+   computed: {
+    session: function(){
+      return <?=Session.getActiveUser().getEmail();?>
+    }
+  },
+  methods: {
+    init: function(){
+      var dateNow = new Date();
+    var year  = dateNow.getFullYear();
+    var month = dateNow.getMonth()+1;
+    var date  = ("0"+dateNow.getDate()).slice(-2);
+    var hour  = dateNow.getHours();
+    var min   = ("0"+dateNow.getMinutes()).slice(-2);
+    window.setTimeout(function(){
+      document.getElementById("time").value=year+'/'+month+'/'+date+' '+hour+':'+min;
+    }, 1000);
+      if(this.product == 'aaaaa'){
+        google.script.run.withSuccessHandler(this.initMaster).getShopList();
+      } else if(this.product == 'bbbbb'){
+        this.inquiryFacility = ''
+      }
+    },
+    initMaster: function(jsonMaster){
+      this.options = JSON.parse(jsonMaster);
+    },
+    preventDoubleClick: function(btn){
+      var form1=document.getElementById('form1').checkValidity();
+      if (form1) {
+        btn.disabled=true;
+        btn.form.submit();
+      } else {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },
+    onSubmit: function(btn){
+      this.submitStatus = 'PENDING';
+      window.setTimeout(this.resetStatus, 2500);
+      var validation = document.getElementById('form1').checkValidity();
+      this.validated = true;
+      if (this.inquiryFacility == ''){
+        window.alert('問い合わせ元を入力して下さい');
+        return;
+      }
+      if (!validation){
+        return;
+      }
+      btn.disabled=true;
+      document.myform.submit();
+    },
+    resetStatus: function(){
+      this.submitStatus = '';
+    }
+  }
+});
+  </script>
+
+  </body>
+</html>

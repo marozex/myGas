@@ -8,7 +8,7 @@ var channelId = "HOGEHOGE";  //この値のみ書き換えて使用して下さ�
 var token = PropertiesService.getScriptProperties().getProperty('OAuth_token');
 var slackapp = SlackApp.create(token);
 var message = "ゴミ捨て当番【燃えるゴミ・燃えないゴミ・ペットボトル・缶・ダンボール】お願いします。";
-var userProperties = PropertiesService.getUserProperties();
+var scriptProperties = PropertiesService.getScriptProperties();
 
 function setGomiTrigger() {
   var triggerDay = new Date();
@@ -45,7 +45,7 @@ function selectRandomUser() {
   var membersList = slackapp.channelsInfo(channelId).channel.members;
   
    // 最新の当選者を取り除く。
-  var latest = userProperties.getProperty('selected_user_id');
+  var latest = scriptProperties.getProperty('selected_user_id');
    
   if (membersList.indexOf(latest) > -1){
     membersList = membersList.filter(function(list){
@@ -54,7 +54,7 @@ function selectRandomUser() {
   }
   
   var selected = membersList[Math.floor(Math.random() * membersList.length)];
-  userProperties.setProperty('selected_user_id', selected);
+  scriptProperties.setProperty('selected_user_id', selected);
   return selected;
 }
 
@@ -89,14 +89,13 @@ function sendGomiMsgWithButton() {
     ]
     )
   });
-  userProperties.setProperty('message_ts', result.ts);  //基準となる投稿のタイムスタンプを保持しておく
+  scriptProperties.setProperty('message_ts', result.ts);  //基準となる投稿のタイムスタンプを保持しておく
 
   return result;
 }
 
 function sendGomiReminder() {
-  var userProperties = PropertiesService.getUserProperties();
-  var latest = userProperties.getProperty('selected_user_id');
+  var latest = scriptProperties.getProperty('selected_user_id');
   slackapp.postMessage(channelId, "<@" + latest + ">ゴミ捨てリマインド通知");
 }
 
@@ -104,7 +103,7 @@ function doPost(e) {
   var p = JSON.parse(e.parameter.payload);
   
   //app経由でのアクセス以外は弾く
-  var verified_token = PropertiesService.getScriptProperties().getProperty('verified_token'); //GASのプロパティストアに登録したVerification Token
+  var verified_token = scriptProperties.getProperty('verified_token'); //GASのプロパティストアに登録したVerification Token
   var verificationToken = p.token ? p.token : null;
   if (verificationToken !== verified_token) { // AppのVerification
     console.log(e);
@@ -144,7 +143,7 @@ function update(text){
       "token": token,
       "channel": channelId,
       "text": text,
-      "ts": userProperties.getProperty('message_ts'),
+      "ts": scriptProperties.getProperty('message_ts'),
       "attachments": [] //空配列で上書きしないと元の投稿のattachmentsが残ってしまう
     }
   };

@@ -26,7 +26,7 @@ function updateSpreadSheet(e) {
    //getRange(row, column [, numrows [, numcolumns]])
   var B_Values = B_Cells.getValues();
 
- for( var i=B_Values.length-1; i>=1; i-- ){
+for( var i=B_Values.length-1; i>=1; i-- ){
     if( B_Values[i] != "" ){
       //最終記録No.を取得し、今回記録するNoを算出
       var index = table.getRange(i+1,1).getValue() + 1;

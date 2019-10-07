@@ -25,7 +25,7 @@
   <body>
   <div id="app">
   <div class="container">
-   <div class="col-lg-10" v-if="session">
+    <div class="col-lg-10" v-if="session">
     <h4 class="font-weight-bold">
       問い合わせフォーム<small>ver20190305 <?=Session.getActiveUser().getEmail();?></small>
     </h4>
@@ -148,10 +148,10 @@
     <p>
       <a href="https://docs.google.com/spreadsheets/d/hogehogehogehogehoge/" target="_blank">スプレッドシートの確認はこちら</a>
     </p>
-   </div>
-   <div v-else>
-     セッションが切れています。googleアカウントに再ログインして下さい。
-   </div>
+    </div>
+    <div v-else>
+      セッションが切れています。googleアカウントに再ログインして下さい。
+    </div>
   </div>
   </div>
 
@@ -167,7 +167,7 @@
     inquiryFacility:'',
     submitStatus: ''
   },
-   computed: {
+  computed: {
     session: function(){
       return <?=Session.getActiveUser().getEmail();?>
     }
@@ -175,14 +175,14 @@
   methods: {
     init: function(){
       var dateNow = new Date();
-    var year  = dateNow.getFullYear();
-    var month = dateNow.getMonth()+1;
-    var date  = ("0"+dateNow.getDate()).slice(-2);
-    var hour  = dateNow.getHours();
-    var min   = ("0"+dateNow.getMinutes()).slice(-2);
-    window.setTimeout(function(){
-      document.getElementById("time").value=year+'/'+month+'/'+date+' '+hour+':'+min;
-    }, 1000);
+      var year  = dateNow.getFullYear();
+      var month = dateNow.getMonth()+1;
+      var date  = ("0"+dateNow.getDate()).slice(-2);
+      var hour  = dateNow.getHours();
+      var min   = ("0"+dateNow.getMinutes()).slice(-2);
+      window.setTimeout(function(){
+        document.getElementById("time").value=year+'/'+month+'/'+date+' '+hour+':'+min;
+      }, 1000);
       if(this.product == 'aaaaa'){
         google.script.run.withSuccessHandler(this.initMaster).getShopList();
       } else if(this.product == 'bbbbb'){

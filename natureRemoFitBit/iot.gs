@@ -1,3 +1,6 @@
+var spreadsheet_id = PropertiesService.getScriptProperties().getProperty('spreadsheet_id');
+var spreadsheet = SpreadsheetApp.openById(spreadsheet_id);
+
 function getRemoData() {
   var url = 'https://api.nature.global/1/devices';
   var token = PropertiesService.getScriptProperties().getProperty('nature_remo_access_token');
@@ -26,10 +29,8 @@ function getNowDate() {
   return String(Utilities.formatDate(d, 'JST', 'yyyy-MM-dd HH:mm'));
 }
 
-//スプレッドシートに書き込む関数
+//スプレッドシートにnatureRemoの値を書き込む関数
 function setData(data) {
-  var spreadsheet_id = PropertiesService.getScriptProperties().getProperty('spreadsheet_id');
-  var spreadsheet = SpreadsheetApp.openById(spreadsheet_id);
   var sheet = spreadsheet.getSheetByName('natureRemo');
   var last_row = sheet.getLastRow() + 1;
 
@@ -38,4 +39,29 @@ function setData(data) {
   sheet.getRange(last_row, 3).setValue(data.humidity);
   sheet.getRange(last_row, 4).setValue(data.llluminance);
   sheet.getRange(last_row, 5).setValue(data.human_sensor);
+}
+
+function getFitBitData() {
+  var today = String(Utilities.formatDate(new Date(), 'JST', 'yyyy-MM-dd'))
+  var sleep_api_url = 'https://api.fitbit.com/1.2/user/-/sleep/date/' + today + '.json';
+  var fitBitToken = PropertiesService.getScriptProperties().getProperty('fitbit_access_token');
+  var headers = {
+    "Authorization": 'Bearer ' + fitBitToken
+  }
+  var options = {
+    "headers": headers
+  }
+  // GETリクエスト
+  var response = UrlFetchApp.fetch(sleep_api_url, options);
+  var sleep_list = JSON.parse(response).sleep
+
+  sleep_list.forEach(function(each_sleep){
+  var sheet = spreadsheet.getSheetByName('fitbit_sleep');
+  var last_row = sheet.getLastRow() + 1;
+  var es = each_sleep
+  var tmp_array =  [[es.dateOfSleep, es.isMainSleep, es.startTime, es.endTime,
+      es.minutesAsleep, es.minutesAwake, es.timeInBed]];
+  
+      sheet.getRange(last_row,1,1,7).setValues(tmp_array);
+  })
 }

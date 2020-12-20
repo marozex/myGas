@@ -1,5 +1,6 @@
 ↓↓環境に合わせてチャンネルID,スプレッドシートのID,シート名を編集する
 var channelId = 'ABCDEFGHIJK' //勤怠報告をするチャンネルのID
+var commandName = '/attend'
 var sheet = SpreadsheetApp.openById(""); //https://docs.google.com/spreadsheets/d/hogehoge/ のhogehogeの部分がID
 var table = sheet.getSheetByName("シート1"); //名簿を記録するシート
 ↑↑適宜編集ここまで
@@ -18,7 +19,7 @@ function doPost(e){
     return ContentService.createTextOutput();
   }
 
-  if (e.parameter.command === '/list' && e.parameter.channel_id !== channelId) {
+  if (e.parameter.command === commandName && e.parameter.channel_id !== channelId) {
     console.log(e);
     var obj = {
       //ephemeralで実行ユーザーにだけ通知される。
@@ -26,7 +27,7 @@ function doPost(e){
       text: '勤怠出力は<#' + channelId + '>で行って下さい'
     };
     return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
-  } else if (e.parameter.command === '/list'){
+  } else if (e.parameter.command === commandName){
     this.postAttendanceList(e)
     return ContentService.createTextOutput();
   } else {
